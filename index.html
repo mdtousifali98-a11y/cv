@@ -2,18 +2,16 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ultimate Resume Builder</title>
+<title>Modern Resume Builder</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-*{box-sizing:border-box}
 body{
 margin:0;
 font-family: 'Segoe UI', sans-serif;
-background:linear-gradient(135deg,#1f1f1f,#2c3e50);
-color:#333;
+background:#f2f2f2;
 }
 
 .container{
@@ -24,76 +22,64 @@ flex-wrap:wrap;
 .form-area{
 flex:1;
 min-width:320px;
-background:#ffffff;
-padding:25px;
-overflow:auto;
-height:100vh;
+padding:20px;
+background:white;
 }
 
 .preview-area{
 flex:1;
 min-width:320px;
-padding:25px;
-overflow:auto;
-height:100vh;
+padding:20px;
 }
 
-h2{
-margin-top:0;
-}
-
-input, textarea, select{
+input,textarea{
 width:100%;
 padding:10px;
-margin-bottom:12px;
-border:1px solid #ccc;
-border-radius:5px;
+margin-bottom:10px;
 }
 
 button{
 padding:10px;
 border:none;
-margin-top:5px;
+background:black;
+color:white;
 cursor:pointer;
-border-radius:5px;
-}
-
-.generate{
-background:#000;
-color:#fff;
-}
-
-.download{
-background:#27ae60;
-color:#fff;
+margin-bottom:10px;
 }
 
 .resume{
 width:794px;
 min-height:1123px;
-background:#fff;
+display:flex;
+background:white;
 margin:auto;
-padding:40px;
-box-shadow:0 0 20px rgba(0,0,0,0.3);
+box-shadow:0 0 20px rgba(0,0,0,0.2);
 }
 
-.header{
-display:flex;
-align-items:center;
-border-bottom:2px solid #000;
-padding-bottom:15px;
+.left{
+width:35%;
+background:#2c3e50;
+color:white;
+padding:30px;
+}
+
+.right{
+width:65%;
+padding:30px;
 }
 
 .photo{
-width:130px;
-height:130px;
+width:140px;
+height:140px;
 border-radius:50%;
 object-fit:cover;
-border:3px solid #000;
+border:4px solid white;
+display:block;
+margin:auto;
 }
 
-.info{
-margin-left:20px;
+h2{
+margin-top:0;
 }
 
 .section{
@@ -101,19 +87,26 @@ margin-top:20px;
 }
 
 .section h3{
-border-bottom:1px solid #000;
+border-bottom:1px solid white;
 padding-bottom:5px;
-margin-bottom:10px;
 }
 
-.template-black{border-left:12px solid #000}
-.template-blue{border-left:12px solid #2980b9}
-.template-green{border-left:12px solid #27ae60}
-.template-red{border-left:12px solid #c0392b}
+.right .section h3{
+border-bottom:1px solid #333;
+}
+
+ul{
+padding-left:20px;
+}
 
 @media(max-width:1000px){
-.resume{width:100%}
-.form-area,.preview-area{height:auto}
+.resume{
+flex-direction:column;
+width:100%;
+}
+.left,.right{
+width:100%;
+}
 }
 </style>
 </head>
@@ -123,114 +116,116 @@ margin-bottom:10px;
 <div class="container">
 
 <div class="form-area">
-<h2>Professional Resume Builder</h2>
 
-<input type="text" id="name" placeholder="Full Name">
-<input type="text" id="email" placeholder="Email">
-<input type="text" id="phone" placeholder="Phone">
+<h2>Resume Builder</h2>
+
+<input id="name" placeholder="Full Name">
+<input id="title" placeholder="Job Title (e.g Electrician)">
+<input id="email" placeholder="Email">
+<input id="phone" placeholder="Phone">
 <textarea id="address" placeholder="Address"></textarea>
 
-<textarea id="objective" placeholder="Career Objective"></textarea>
-<textarea id="education" placeholder="Education (Separate by line)"></textarea>
+<textarea id="summary" placeholder="Professional Summary"></textarea>
+<textarea id="education" placeholder="Education (line by line)"></textarea>
 <textarea id="skills" placeholder="Skills (comma separated)"></textarea>
-<textarea id="experience" placeholder="Experience (Separate by line)"></textarea>
+<textarea id="experience" placeholder="Experience (line by line)"></textarea>
 
 <label>Upload Photo</label>
 <input type="file" id="photoInput" accept="image/*">
 
-<label>Select Template</label>
-<select id="template">
-<option value="template-black">Black</option>
-<option value="template-blue">Blue</option>
-<option value="template-green">Green</option>
-<option value="template-red">Red</option>
-</select>
-
-<button class="generate" onclick="generateResume()">Generate Resume</button>
-<button class="download" onclick="downloadPDF()">Download PDF</button>
+<button onclick="generate()">Generate Resume</button>
+<button onclick="downloadPDF()">Download PDF</button>
 
 </div>
 
 <div class="preview-area">
 
-<div id="resumePreview" class="resume template-black">
+<div id="resumePreview" class="resume">
 
-<div class="header">
+<div class="left">
+
 <img id="previewPhoto" class="photo">
-<div class="info">
-<h1 id="previewName"></h1>
+
+<div class="section">
+<h3>CONTACT</h3>
 <p id="previewEmail"></p>
 <p id="previewPhone"></p>
 <p id="previewAddress"></p>
 </div>
-</div>
 
 <div class="section">
-<h3>Career Objective</h3>
-<p id="previewObjective"></p>
-</div>
-
-<div class="section">
-<h3>Education</h3>
+<h3>EDUCATION</h3>
 <ul id="previewEducation"></ul>
 </div>
 
 <div class="section">
-<h3>Skills</h3>
+<h3>SKILLS</h3>
 <ul id="previewSkills"></ul>
 </div>
 
+</div>
+
+<div class="right">
+
+<h1 id="previewName"></h1>
+<h3 id="previewTitle"></h3>
+
 <div class="section">
-<h3>Experience</h3>
+<h3>PROFESSIONAL SUMMARY</h3>
+<p id="previewSummary"></p>
+</div>
+
+<div class="section">
+<h3>PROFESSIONAL EXPERIENCE</h3>
 <ul id="previewExperience"></ul>
 </div>
 
 </div>
 
 </div>
+
+</div>
+
 </div>
 
 <script>
 
-function generateResume(){
+function generate(){
 
-document.getElementById("previewName").innerText=name.value;
-document.getElementById("previewEmail").innerText="Email: "+email.value;
-document.getElementById("previewPhone").innerText="Phone: "+phone.value;
-document.getElementById("previewAddress").innerText=address.value;
-document.getElementById("previewObjective").innerText=objective.value;
+previewName.innerText=name.value;
+previewTitle.innerText=title.value;
+previewEmail.innerText="Email: "+email.value;
+previewPhone.innerText="Phone: "+phone.value;
+previewAddress.innerText=address.value;
+previewSummary.innerText=summary.value;
 
-let eduList=document.getElementById("previewEducation");
-eduList.innerHTML="";
-education.value.split("\n").forEach(item=>{
-if(item.trim()!=""){
+previewEducation.innerHTML="";
+education.value.split("\n").forEach(e=>{
+if(e.trim()!=""){
 let li=document.createElement("li");
-li.innerText=item;
-eduList.appendChild(li);
+li.innerText=e;
+previewEducation.appendChild(li);
 }
 });
 
-let skillList=document.getElementById("previewSkills");
-skillList.innerHTML="";
-skills.value.split(",").forEach(item=>{
-if(item.trim()!=""){
+previewSkills.innerHTML="";
+skills.value.split(",").forEach(s=>{
+if(s.trim()!=""){
 let li=document.createElement("li");
-li.innerText=item;
-skillList.appendChild(li);
+li.innerText=s;
+previewSkills.appendChild(li);
 }
 });
 
-let expList=document.getElementById("previewExperience");
-expList.innerHTML="";
-experience.value.split("\n").forEach(item=>{
-if(item.trim()!=""){
+previewExperience.innerHTML="";
+experience.value.split("\n").forEach(ex=>{
+if(ex.trim()!=""){
 let li=document.createElement("li");
-li.innerText=item;
-expList.appendChild(li);
+li.innerText=ex;
+previewExperience.appendChild(li);
 }
 });
 
-resumePreview.className="resume "+template.value;
 }
 
 photoInput.addEventListener("change",function(e){
@@ -245,7 +240,6 @@ function downloadPDF(){
 html2pdf().from(resumePreview).set({
 margin:0,
 filename:'resume.pdf',
-image:{type:'jpeg',quality:1},
 html2canvas:{scale:2},
 jsPDF:{unit:'px',format:[794,1123]}
 }).save();
