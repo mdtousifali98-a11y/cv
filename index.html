@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ultimate Resume Builder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family: 'Segoe UI', sans-serif;
+background:linear-gradient(135deg,#1f1f1f,#2c3e50);
+color:#333;
+}
+
+.container{
+display:flex;
+flex-wrap:wrap;
+}
+
+.form-area{
+flex:1;
+min-width:320px;
+background:#ffffff;
+padding:25px;
+overflow:auto;
+height:100vh;
+}
+
+.preview-area{
+flex:1;
+min-width:320px;
+padding:25px;
+overflow:auto;
+height:100vh;
+}
+
+h2{
+margin-top:0;
+}
+
+input, textarea, select{
+width:100%;
+padding:10px;
+margin-bottom:12px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+button{
+padding:10px;
+border:none;
+margin-top:5px;
+cursor:pointer;
+border-radius:5px;
+}
+
+.generate{
+background:#000;
+color:#fff;
+}
+
+.download{
+background:#27ae60;
+color:#fff;
+}
+
+.resume{
+width:794px;
+min-height:1123px;
+background:#fff;
+margin:auto;
+padding:40px;
+box-shadow:0 0 20px rgba(0,0,0,0.3);
+}
+
+.header{
+display:flex;
+align-items:center;
+border-bottom:2px solid #000;
+padding-bottom:15px;
+}
+
+.photo{
+width:130px;
+height:130px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #000;
+}
+
+.info{
+margin-left:20px;
+}
+
+.section{
+margin-top:20px;
+}
+
+.section h3{
+border-bottom:1px solid #000;
+padding-bottom:5px;
+margin-bottom:10px;
+}
+
+.template-black{border-left:12px solid #000}
+.template-blue{border-left:12px solid #2980b9}
+.template-green{border-left:12px solid #27ae60}
+.template-red{border-left:12px solid #c0392b}
+
+@media(max-width:1000px){
+.resume{width:100%}
+.form-area,.preview-area{height:auto}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="form-area">
+<h2>Professional Resume Builder</h2>
+
+<input type="text" id="name" placeholder="Full Name">
+<input type="text" id="email" placeholder="Email">
+<input type="text" id="phone" placeholder="Phone">
+<textarea id="address" placeholder="Address"></textarea>
+
+<textarea id="objective" placeholder="Career Objective"></textarea>
+<textarea id="education" placeholder="Education (Separate by line)"></textarea>
+<textarea id="skills" placeholder="Skills (comma separated)"></textarea>
+<textarea id="experience" placeholder="Experience (Separate by line)"></textarea>
+
+<label>Upload Photo</label>
+<input type="file" id="photoInput" accept="image/*">
+
+<label>Select Template</label>
+<select id="template">
+<option value="template-black">Black</option>
+<option value="template-blue">Blue</option>
+<option value="template-green">Green</option>
+<option value="template-red">Red</option>
+</select>
+
+<button class="generate" onclick="generateResume()">Generate Resume</button>
+<button class="download" onclick="downloadPDF()">Download PDF</button>
+
+</div>
+
+<div class="preview-area">
+
+<div id="resumePreview" class="resume template-black">
+
+<div class="header">
+<img id="previewPhoto" class="photo">
+<div class="info">
+<h1 id="previewName"></h1>
+<p id="previewEmail"></p>
+<p id="previewPhone"></p>
+<p id="previewAddress"></p>
+</div>
+</div>
+
+<div class="section">
+<h3>Career Objective</h3>
+<p id="previewObjective"></p>
+</div>
+
+<div class="section">
+<h3>Education</h3>
+<ul id="previewEducation"></ul>
+</div>
+
+<div class="section">
+<h3>Skills</h3>
+<ul id="previewSkills"></ul>
+</div>
+
+<div class="section">
+<h3>Experience</h3>
+<ul id="previewExperience"></ul>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+function generateResume(){
+
+document.getElementById("previewName").innerText=name.value;
+document.getElementById("previewEmail").innerText="Email: "+email.value;
+document.getElementById("previewPhone").innerText="Phone: "+phone.value;
+document.getElementById("previewAddress").innerText=address.value;
+document.getElementById("previewObjective").innerText=objective.value;
+
+let eduList=document.getElementById("previewEducation");
+eduList.innerHTML="";
+education.value.split("\n").forEach(item=>{
+if(item.trim()!=""){
+let li=document.createElement("li");
+li.innerText=item;
+eduList.appendChild(li);
+}
+});
+
+let skillList=document.getElementById("previewSkills");
+skillList.innerHTML="";
+skills.value.split(",").forEach(item=>{
+if(item.trim()!=""){
+let li=document.createElement("li");
+li.innerText=item;
+skillList.appendChild(li);
+}
+});
+
+let expList=document.getElementById("previewExperience");
+expList.innerHTML="";
+experience.value.split("\n").forEach(item=>{
+if(item.trim()!=""){
+let li=document.createElement("li");
+li.innerText=item;
+expList.appendChild(li);
+}
+});
+
+resumePreview.className="resume "+template.value;
+}
+
+photoInput.addEventListener("change",function(e){
+let reader=new FileReader();
+reader.onload=function(){
+previewPhoto.src=reader.result;
+}
+reader.readAsDataURL(e.target.files[0]);
+});
+
+function downloadPDF(){
+html2pdf().from(resumePreview).set({
+margin:0,
+filename:'resume.pdf',
+image:{type:'jpeg',quality:1},
+html2canvas:{scale:2},
+jsPDF:{unit:'px',format:[794,1123]}
+}).save();
+}
+
+</script>
+
+</body>
+</html>
